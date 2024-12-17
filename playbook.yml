@@ -1,0 +1,66 @@
+---
+- name: Install Docker and deploy container on VMware VMs
+  hosts: vmware_vms
+  become: yes
+  vars:
+    ansible_ssh_private_key_file: "/home/rayan/.ssh/id_rsa"  # Path to your private key
+
+  tasks:
+    - name: Install Docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker's official APT repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
+        state: present
+
+    - name: Install Docker CE
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Ensure pip is installed
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Install Python Docker SDK
+      pip:
+        name: docker
+        state: present
+
+    - name: Log in to Docker Hub
+      docker_login:
+        username: "rayanelsharkawy"
+        password: "dckr_pat_KEseHcxUMoraWOEmCeSBLtfWu1A"  # Ensure this is correct and securely stored
+
+    - name: Pull Docker image from Docker Hub
+      docker_image:
+        name: rayanelsharkawy/python-app  # Correct image name
+        source: pull
+
+    - name: Run Docker container
+      docker_container:
+        name: python-app
+        image: rayanelsharkawy/python-app  # Correct image name
+        state: started
+        ports:
+          - "80:80"
