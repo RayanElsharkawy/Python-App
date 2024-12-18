@@ -1,11 +1,11 @@
-
-
 ---
 - name: Install Docker and deploy container on VMware VMs
   hosts: vmware_vms
   become: yes
   vars:
     ansible_ssh_private_key_file: "/home/rayan/.ssh/id_rsa"  # Path to your private key
+    docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"  # Set as environment variable
+    docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"  # Set as environment variable
 
   tasks:
     - name: Install Docker dependencies
@@ -41,8 +41,8 @@
 
     - name: Log in to Docker Hub
       docker_login:
-        username: "rayanelsharkawy"
-        password: "dckr_pat_KEseHcxUMoraWOEmCeSBLtfWu1A"
+        username: "{{ docker_username }}"
+        password: "{{ docker_password }}"
     
     - name: Pull Docker image from Docker Hub
       docker_image:
@@ -56,4 +56,3 @@
         state: started
         ports:
           - "80:80"
-
