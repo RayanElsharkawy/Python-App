@@ -1,11 +1,14 @@
 # Base Image
-FROM python:3.9-slim
+FROM python:3.9
+
 
 # Set working directory
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y iputils-ping && \
+
+RUN echo "deb http://ftp.us.debian.org/debian/ bookworm main" > /etc/apt/sources.list && \
+    apt-get update && apt-get install -y iputils-ping && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy application files
