@@ -4,6 +4,7 @@
   become: yes
   vars:
     ansible_ssh_private_key_file: "/home/rayan/.ssh/id_rsa"  # Path to your private key
+    docker_image: "rayanelsharkawy/python-app"               # Docker image variable
     docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"  # Set as environment variable
     docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"  # Set as environment variable
 
@@ -17,6 +18,8 @@
           - gnupg
           - lsb-release
         state: present
+      register: docker_dependencies
+      changed_when: docker_dependencies is changed
 
     - name: Add Docker's official GPG key
       apt_key:
@@ -25,7 +28,7 @@
 
     - name: Add Docker's official APT repository
       apt_repository:
-        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
         state: present
 
     - name: Install Docker CE
@@ -51,18 +54,19 @@
 
     - name: Log in to Docker Hub
       docker_login:
-        username: "{{ docker_username }}"
-        password: "{{ docker_password }}"
+        username: "{{ docker_username }}"  # Use environment variable
+        password: "{{ docker_password }}"  # Use environment variable
 
     - name: Pull Docker image from Docker Hub
       docker_image:
-        name: rayanelsharkawy/python-app  # Correct image name
+        name: "{{ docker_image }}"                         # Reference Docker image variable
         source: pull
 
     - name: Run Docker container
       docker_container:
         name: python-app
-        image: rayanelsharkawy/python-app  # Correct image name
+        image: "{{ docker_image }}"                        # Reference Docker image variable
         state: started
         ports:
           - "80:80"
+        restart_policy: always                             # Ensure container restarts on failure
