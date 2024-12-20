@@ -7,9 +7,11 @@ WORKDIR /app
 
 # Install system dependencies
 
-RUN echo "deb http://ftp.us.debian.org/debian/ bookworm main" > /etc/apt/sources.list && \
-    apt-get update && apt-get install -y iputils-ping && \
-    rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y iputils-ping && ping -c 4 pypi.org
+
+#RUN echo "deb http://ftp.us.debian.org/debian/ bookworm main" > /etc/apt/sources.list && \
+   # apt-get update && apt-get install -y iputils-ping && \
+   # rm -rf /var/lib/apt/lists/*
 
 # Copy application files
 COPY . /app
