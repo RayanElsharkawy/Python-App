@@ -1,26 +1,17 @@
-# Base Image
+# Use Python official image
 FROM python:3.9
 
-
-# Set working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies
+# Copy the Python application into the container
+COPY . .
 
-#RUN apt-get update && apt-get install -y iputils-ping && ping -c 4 pypi.org
+# Install any required Python packages
+RUN pip install --no-cache-dir -r requirements.txt
 
-#RUN echo "deb http://ftp.us.debian.org/debian/ bookworm main" > /etc/apt/sources.list && \
-   # apt-get update && apt-get install -y iputils-ping && \
-   # rm -rf /var/lib/apt/lists/*
-
-# Copy application files
-COPY . /app
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt --index-url=https://pypi.org/simple
-
-# Expose application port
+# Expose the port the app will run on
 EXPOSE 5000
 
-# Run the application
+# Command to run the application
 CMD ["python", "app.py"]
