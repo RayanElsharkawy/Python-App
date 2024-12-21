@@ -62,11 +62,16 @@
         name: "{{ docker_image }}"                         # Reference Docker image variable
         source: pull
 
+    - name: Build Docker image from Dockerfile
+       docker_image:
+        name: "{{ docker_image }}"
+          build: .
+
     - name: Run Docker container
       docker_container:
         name: python-app
         image: "{{ docker_image }}"                        # Reference Docker image variable
         state: started
         ports:
-          - "80:80"
+          - "5000:5000"
         restart_policy: always                             # Ensure container restarts on failure
